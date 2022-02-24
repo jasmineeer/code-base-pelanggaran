@@ -11,6 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // relasi siswa => pelanggaran_siswa (parent to child)
+      // key: id_siswa
+      // parent: siswa
+      // child: pelanggaran_siswa
+      this.hasMany(models.pelanggaran_siswa, {
+        foreignKey: "id_siswa",
+        as: "pelanggaran_siswa "
+      })
     }
   }
   siswa.init({
