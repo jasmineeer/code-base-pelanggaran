@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       // parent: pelanggaran_siswa
       // child: detail_pelanggaran_siswa
       // tipe: 
+      
     }
   }
   detail_pelanggaran_siswa.init({

@@ -1,108 +1,108 @@
-const md5 = require("md5")
-const {request, response} = require("express")
-const req = require("express/lib/request");
+let modelUser = require("../models/index").user
+let md5 = require(`md5`)
+let jwt = require(`jsonwebtoken`)
 
-// memanggil file model untuk user
-let modelUser = require("../models/index").user 
-let jwt = require('jsonwebtoken')
+const { validationResult } = require(`express-validator`)
 
-exports.getDataUser = (request, response) => {
-    modelUser.findAll()
-    .then(result => {
-        return response.json(result)
-    })
-    .catch(error => {
-        return response.json({
-            message: error.message  
-        })
-    })
+exports.getUser = async (request, response) => {
+    let dataUser = await modelUser.findAll()
+    return response.json(dataUser)
 }
 
-exports.addDataUser = (request, response) => {
-    // tampung data request
-    let newUser = {
-        nama_user: request.body.nama_user,
-        username: request.body.username,
-        password: md5(request.body.password)
+exports.addUser = (request, response) => {
+    let error = validationResult(request)
+    if (!error.isEmpty()) {
+        return response.json(error.array())
     }
 
-    modelUser.create(newUser)
-    .then(result => {
-        return response.json({
-            message: `Data user successfully inserted`
-        })
-    })
-    .catch(error => {
-        return response.json({
-            message: error.message
-        })
-    })
-}
-
-exports.editDataUser = (request, response) => {
-    let id = request.params.id_user
     let dataUser = {
         nama_user: request.body.nama_user,
         username: request.body.username,
         password: md5(request.body.password)
     }
 
-    modelUser.update(dataUser, { where: { id_user: id } })
-    .then(result => {
-        return response.json({
-            message: `Data user successfully updated`
+    modelUser.create(dataUser)
+        .then(result => {
+            return response.json({
+                message: `Data user berhasil ditambahkan`
+            })
         })
-    })
-    .catch(error => {
-        return response.json({
-            message: error.message
+        .catch(error => {
+            return response.json({
+                message: error.message
+            })
         })
-    })
 }
 
-exports.deleteDataUser = (request, response) => {
-    let id = request.params.id_user
-    
-    modelUser.destroy({ where: { id_user: id } })
-    .then(result => {
-        return response.json({
-            message: `Data user successfully deleted`
+exports.updateUser = (request, response) => {
+    let params = {
+        id_user: request.params.id_user
+    }
+
+    let dataUser = {
+        nama_user: request.body.nama_user,
+        username: request.body.username,
+        password: md5(request.body.password)
+    }
+
+    modelUser.update(dataUser, { where: params })
+        .then(result => {
+            return response.json({
+                message: `Data user berhasil diubah`
+            })
         })
-    })
-    .catch(error => {
-        return response.json({
-            message: error.message 
+        .catch(error => {
+            return response.json({
+                message: error.message
+            })
         })
-    })
 }
 
-exports.authentication = async(request, response) => {
+exports.deleteUser = (request, response) => {
+    let params = {
+        id_user: request.params.id_user
+    }
+
+    modelUser.destroy({ where: params })
+        .then(result => {
+            return response.json({
+                message: `Data user berhasil dihapus`
+            })
+        })
+        .catch(error => {
+            return response.json({
+                message: error.message
+            })
+        })
+}
+
+exports.authentication = async (request, response) => {
     let data = {
         username: request.body.username,
         password: md5(request.body.password)
     }
 
     // validasi (cek data di tabel user)
-    let result = await modelUser.findOne({where: data})
+    let result = await modelUser.findOne({ where: data })
 
-    if(result) {
+    if (result) {
         // data ditemukan
 
-        //payload adalah data/informasi yang akan dienkripsi
-        let payload = JSON.stringify(result) // konversi dari bentuk objek ke
+        // payload adalah data/informasi yg akan dienkripsi
+        let payload = JSON.stringify(result) // konversi dari bentuk objek ke JSON
         let secretKey = `Sequelize itu sangat menyenangkan`
 
         // generate token
         let token = jwt.sign(payload, secretKey)
         return response.json({
             logged: true,
-            token: token 
+            token: token
         })
-    } else{
+    } else {
         // data tidak ditemukan
         return response.json({
             logged: false,
-            message: `Invalid username or password `
+            message: `Invalid Username or password`
         })
     }
 }

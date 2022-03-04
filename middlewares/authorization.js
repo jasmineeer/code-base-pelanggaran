@@ -1,4 +1,4 @@
-const {request, response} = require("express");
+const {request, response} = require("express")
 let jwt = require("jsonwebtoken")
 
 exports.authorization = (request, response, next) => {

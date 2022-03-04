@@ -1,16 +1,18 @@
 const express = require(`express`)
 const app = express()
+const { body } = require(`express-validator`)
 
 app.use(express.json())
 
 // call user controller
 let userController = require("../controllers/userController")
+let userValidator = require("../middlewares/userValidator")
 
 // end-point get data user
 app.get("/", userController.getDataUser)
 
 // end-point add data user
-app.post("/", userController.addDataUser)
+app.post("/",[userValidator.validate], userController.addDataUser)
 
 // end-point edit user
 app.put("/:id_user", userController.editDataUser)
