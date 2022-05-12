@@ -10,14 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      // relasi siswa => pelanggaran_siswa (parent to child)
+      // relasi siswa -> pelanggaran_siswa (parent -> child)
       // key: id_siswa
-      // parent: siswa
-      // child: pelanggaran_siswa
+      // parent: siswa, child: pelanggaran_siswa
+      // tipe: 1 siswa bisa melakukan banyak pelanggaran (one to many)
       this.hasMany(models.pelanggaran_siswa, {
         foreignKey: "id_siswa",
-        as: "pelanggaran_siswa "
+        as: "pelanggaran_siswa"
       })
     }
   }
@@ -31,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     nama: DataTypes.STRING,
     kelas: DataTypes.STRING,
     poin: DataTypes.INTEGER,
-    Image: DataTypes.STRING
+    image: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'siswa',

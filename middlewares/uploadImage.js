@@ -1,14 +1,15 @@
 const multer = require("multer")
 const path = require("path")
+const fs = require("fs")
 
 const storage = multer.diskStorage({
     destination: (request, file, callback) => {
         callback(null, "./image")
-        // ini config untuk menentukan folder penyimpanan file yang diupload
+        // ini config utk menentukan folder penyimpanan file yg diupload
     },
     filename: (request, file, callback) => {
         callback(null, `image-${Date.now()}${path.extname(file.originalname)}`)
-        // ini config untuk menentukan nama file yang diupload
+        // ini config untuk menentukan nama file yg diupload
     }
 })
 

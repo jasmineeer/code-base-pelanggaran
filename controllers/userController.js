@@ -9,6 +9,43 @@ exports.getUser = async (request, response) => {
     return response.json(dataUser)
 }
 
+exports.findUser = async (request, response) => {
+    let keyword = request.body.keyword 
+
+    /** import sequelize operator */
+    let sequelize = require(`sequelize`)
+    let Op = sequelize.Op 
+    /**
+     * query = select * from user where username like "%keyword%" or
+     * nama_user like "%keyword%"
+     */
+
+    let dataUser = await modelUser.findAll({
+        where: {
+            [Op.or] : {
+                username: { [Op.like] : `%${keyword}%`},
+                nama_user: { [Op.like] : `%${keyword}%`}
+            }
+        }
+    })
+    return response.json(dataUser)
+}
+
+exports.eachSiswa = async(request, response) => {
+    let id = request.params.id_siswa 
+    let data = await pelanggaranSiswaModel.findAll({
+        include: ["siswa", "user", {
+            model: detailPelanggaranSiswaModel,
+            as: "detail_pelanggaran_siswa",
+            include: ["pelanggaran"]
+        }],
+        where: {
+            id_siswa: id 
+        }
+    })
+    return response.json(data)
+}
+
 exports.addUser = (request, response) => {
     let error = validationResult(request)
     if (!error.isEmpty()) {
@@ -96,7 +133,8 @@ exports.authentication = async (request, response) => {
         let token = jwt.sign(payload, secretKey)
         return response.json({
             logged: true,
-            token: token
+            token: token,
+            dataUser: result 
         })
     } else {
         // data tidak ditemukan
