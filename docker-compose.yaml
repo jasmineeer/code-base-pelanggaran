@@ -5,4 +5,4 @@ services:
     platform: windows/x86_64
     build: .
     ports:
-      - 8000:8000
+      - 8080:8080
